@@ -1,0 +1,3 @@
+# Private storage: never served directly. Files are delivered only through authorized PHP endpoints.
+Require all denied
+php_flag engine off
