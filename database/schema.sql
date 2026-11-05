@@ -85,6 +85,7 @@ CREATE TABLE complaints (
 CREATE TABLE complaint_student_details (
   id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   complaint_id INT UNSIGNED NOT NULL UNIQUE,
+  student_name VARCHAR(100) NOT NULL,
   school_name VARCHAR(150) NOT NULL,
   school_roll_number VARCHAR(50) NOT NULL,
   class_name VARCHAR(50) NOT NULL,

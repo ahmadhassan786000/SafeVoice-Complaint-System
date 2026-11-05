@@ -22,7 +22,9 @@ Passwords can be changed any time from Profile Settings → Change Password.
 ## Upgrading an existing database
 Do NOT import `schema.sql` on a database you want to keep (it recreates every table).
 Import `database/migration.sql` instead. It drops `audit_logs` and `login_attempts`, removes the
-`users.must_change_password` column (only if it still exists), and adds the default admin only if missing.
+`users.must_change_password` column (only if it still exists), adds the per-complaint student name
+(backfilled from each student's account name), creates any missing Student, Investigator, or Super Admin
+roles, and adds the default admin using the Super Admin role's ID only if missing.
 All users, complaints, messages, evidence and history are kept. Fresh installs: `schema.sql`, then `seed.sql`.
 
 ## Project layout

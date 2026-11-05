@@ -16,7 +16,16 @@ $image = $images[0] ?? null;
 $err = [];
 if (mb_strlen($name) < 2 || mb_strlen($name) > 100 || !preg_match('/^[\p{L}\s.\'-]+$/u', $name)) $err[] = 'Enter a valid full name.';
 if (!valid_email($email)) $err[] = 'Enter a valid email address.';
-elseif (db_value($conn, "SELECT id FROM users WHERE email = ?", 's', [$email])) $err[] = 'That email address is already in use.';
+else {
+    $existing = db_one($conn, "SELECT r.role_code, u.account_status FROM users u JOIN roles r ON r.id = u.role_id WHERE u.email = ?", 's', [$email]);
+    if ($existing) {
+        if ($existing['role_code'] === ROLE_OFFICER && $existing['account_status'] !== 'active') {
+            $err[] = 'An inactive investigator account already uses this email. Find it under Investigation Officers (All statuses) and activate it instead.';
+        } else {
+            $err[] = 'This email is already used by an existing ' . strtolower($existing['role_code']) . ' account.';
+        }
+    }
+}
 if (!phone_required_ok($phone)) $err[] = 'Enter a valid phone number.';
 if (($m = password_error($pw)) !== '') $err[] = $m;
 if ($pw !== $pw2) $err[] = 'Passwords do not match.';
@@ -29,10 +38,27 @@ if ($image) {
 }
 if ($err) { old_set($_POST); foreach ($err as $x) flash_set('danger', $x); redirect('admin/add-officer.php'); }
 
+$role_id = get_role_id($conn, ROLE_OFFICER);
+if (!$role_id) {
+    error_log('Cannot create investigator: the INVESTIGATOR role is missing from the roles table.');
+    old_set($_POST);
+    flash_set('danger', 'The Investigator role is missing from the database. Import the updated database/migration.sql in phpMyAdmin, then try again.');
+    redirect('admin/add-officer.php');
+}
+
 $id = db_insert($conn,
     "INSERT INTO users (role_id, full_name, email, phone, password, account_status) VALUES (?,?,?,?,?,'active')",
-    'issss', [get_role_id($conn, ROLE_OFFICER), $name, $email, $phone, password_hash($pw, PASSWORD_DEFAULT)]);
-if (!$id) { old_set($_POST); flash_set('danger', 'Could not create the account. The email may already be in use.'); redirect('admin/add-officer.php'); }
+    'issss', [$role_id, $name, $email, $phone, password_hash($pw, PASSWORD_DEFAULT)]);
+if (!$id) {
+    old_set($_POST);
+    $existing = db_one($conn, "SELECT r.role_code, u.account_status FROM users u JOIN roles r ON r.id = u.role_id WHERE u.email = ?", 's', [$email]);
+    if ($existing) {
+        flash_set('danger', 'This email was just used by another account. Please check the account and try again.');
+    } else {
+        flash_set('danger', 'The investigator account could not be created because of a database error. Please check the application error log.');
+    }
+    redirect('admin/add-officer.php');
+}
 
 old_clear();
 if ($image) {

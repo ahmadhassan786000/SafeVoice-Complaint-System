@@ -10,7 +10,7 @@ $id = (int)($_GET['id'] ?? 0);
 $t = get_user_by_id($conn, $id);
 if (!$t || $t['role_code'] !== ROLE_OFFICER) { flash_set('danger', 'Investigator not found.'); redirect('admin/officers.php'); }
 $stats = db_one($conn, "SELECT COUNT(*) total, SUM(status NOT IN ('Resolved','Closed')) open_n, SUM(status='Resolved') resolved, SUM(status='Closed') closed FROM complaints WHERE assigned_officer_id = ?", 'i', [$id]);
-$cases = db_all($conn, "SELECT c.id, c.complaint_code, c.status, cat.category_name, s.full_name AS student_name FROM complaints c JOIN complaint_categories cat ON cat.id=c.category_id JOIN users s ON s.id=c.student_user_id WHERE c.assigned_officer_id = ? ORDER BY c.id DESC LIMIT 30", 'i', [$id]);
+$cases = db_all($conn, "SELECT c.id, c.complaint_code, c.status, cat.category_name, d.student_name FROM complaints c JOIN complaint_categories cat ON cat.id=c.category_id JOIN complaint_student_details d ON d.complaint_id=c.id WHERE c.assigned_officer_id = ? ORDER BY c.id DESC LIMIT 30", 'i', [$id]);
 $page_title = 'Investigator ' . $t['full_name']; $active = 'officers';
 include ROOT_PATH . '/includes/panel-header.php';
 $target = $t; $return = 'admin/officer-details.php?id=' . $id; $show_info_form = false;

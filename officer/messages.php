@@ -6,12 +6,12 @@ require_once ROOT_PATH . '/middleware/auth.php';
 require_once ROOT_PATH . '/middleware/role-check.php';
 $me = require_role(ROLE_OFFICER);
 
-$convos = db_all($conn, "SELECT c.id, c.complaint_code, c.status, c.created_at, u.full_name AS student_name, u.id AS student_uid, u.profile_image AS student_image,
+$convos = db_all($conn, "SELECT c.id, c.complaint_code, c.status, c.created_at, d.student_name, u.id AS student_uid, u.profile_image AS student_image,
     (SELECT COUNT(*) FROM complaint_messages m WHERE m.complaint_id = c.id AND m.sender_role = 'STUDENT' AND m.is_read = 0) AS unread,
     (SELECT m.message FROM complaint_messages m WHERE m.complaint_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_msg,
     (SELECT m.sender_role FROM complaint_messages m WHERE m.complaint_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_role,
     (SELECT m.created_at FROM complaint_messages m WHERE m.complaint_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_at
-    FROM complaints c JOIN users u ON u.id = c.student_user_id WHERE c.assigned_officer_id = ?", 'i', [$me['id']]);
+    FROM complaints c JOIN users u ON u.id = c.student_user_id JOIN complaint_student_details d ON d.complaint_id = c.id WHERE c.assigned_officer_id = ?", 'i', [$me['id']]);
 usort($convos, function ($a, $b) {
     if ((int)$a['unread'] > 0 xor (int)$b['unread'] > 0) return (int)$b['unread'] > 0 ? 1 : -1;
     $ta = strtotime($a['last_at'] ?: $a['created_at']); $tb = strtotime($b['last_at'] ?: $b['created_at']);

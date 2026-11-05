@@ -15,7 +15,7 @@ $form_errors = []; $keep = [];
 foreach (flash_get() as $f) { if ($f['type'] === 'danger') $form_errors[] = $f['message']; else $keep[] = $f; }
 foreach ($keep as $f) flash_set($f['type'], $f['message']);
 // Map each server message to the field it is about, so that field is highlighted.
-$field_hints = ['school name' => 'school_name', 'roll number' => 'school_roll_number', 'class is' => 'class_name', 'gender' => 'gender',
+$field_hints = ['student name' => 'student_name', 'school name' => 'school_name', 'roll number' => 'school_roll_number', 'class is' => 'class_name', 'gender' => 'gender',
                 'category' => 'category_id', 'who is being reported' => 'reported_person_type', 'reported person name' => 'reported_person_name',
                 'incident date' => 'incident_date', 'incident location' => 'incident_location', 'describe the incident' => 'description', 'description or witness' => 'description'];
 $bad = [];
@@ -48,9 +48,9 @@ include ROOT_PATH . '/includes/student-header.php';
       <?= csrf_field() ?>
 
       <section class="sv-fsec" aria-labelledby="secA">
-        <header class="sv-fsec-head"><span class="sv-fsec-num">1</span><div><h2 id="secA">Student information</h2><p>Your name and ID come from your account. Please tell us about your school.</p></div></header>
+        <header class="sv-fsec-head"><span class="sv-fsec-num">1</span><div><h2 id="secA">Student information</h2><p>Enter the student name for this complaint. Your Student ID comes from your account.</p></div></header>
         <div class="row g-3">
-          <div class="col-md-6"><label class="form-label" for="sc_name">Full Name</label><input class="form-control" id="sc_name" value="<?= e($me['full_name']) ?>" disabled></div>
+          <div class="col-md-6"><label class="form-label" for="student_name">Full Name <span class="sv-req" aria-hidden="true">*</span></label><input class="form-control<?= $inv('student_name') ?>" id="student_name" name="student_name" maxlength="100" required autocomplete="name" value="<?= e(old('student_name', $me['full_name'])) ?>"></div>
           <div class="col-md-6"><label class="form-label" for="sc_sid">Student ID</label><input class="form-control" id="sc_sid" value="<?= e($me['student_id']) ?>" disabled></div>
           <div class="col-md-6"><label class="form-label" for="school_name">School Name <span class="sv-req" aria-hidden="true">*</span></label><input class="form-control<?= $inv('school_name') ?>" id="school_name" name="school_name" maxlength="150" required value="<?= e(old('school_name')) ?>" autocomplete="organization"></div>
           <div class="col-md-6"><label class="form-label" for="school_roll_number">School Roll Number <span class="sv-req" aria-hidden="true">*</span></label><input class="form-control<?= $inv('school_roll_number') ?>" id="school_roll_number" name="school_roll_number" maxlength="50" required value="<?= e(old('school_roll_number')) ?>"></div>

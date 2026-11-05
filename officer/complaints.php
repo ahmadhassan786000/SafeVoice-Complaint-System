@@ -7,7 +7,7 @@ require_once ROOT_PATH . '/middleware/role-check.php';
 $me = require_role(ROLE_OFFICER);
 
 $q = trim($_GET['q'] ?? ''); $cat = (int)($_GET['category'] ?? 0); $st = pick($_GET['status'] ?? '', COMPLAINT_STATUSES);
-$sql = "SELECT c.id, c.complaint_code, c.status, c.created_at, cat.category_name, d.school_name, u.full_name AS student_name, u.id AS sid, u.profile_image
+$sql = "SELECT c.id, c.complaint_code, c.status, c.created_at, cat.category_name, d.school_name, d.student_name, u.id AS sid, u.profile_image
         FROM complaints c JOIN complaint_categories cat ON cat.id = c.category_id JOIN complaint_student_details d ON d.complaint_id = c.id JOIN users u ON u.id = c.student_user_id
         WHERE c.assigned_officer_id = ?";
 $types = 'i'; $params = [$me['id']];

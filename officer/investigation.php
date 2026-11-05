@@ -8,8 +8,8 @@ $me = require_role(ROLE_OFFICER);
 $id = (int)($_GET['id'] ?? 0);
 
 if (!$id) {   // ---- list view ----
-    $rows = db_all($conn, "SELECT c.id, c.complaint_code, c.status, cat.category_name, u.full_name AS student_name, i.findings, i.updated_at
-        FROM complaints c JOIN complaint_categories cat ON cat.id = c.category_id JOIN users u ON u.id = c.student_user_id LEFT JOIN investigations i ON i.complaint_id = c.id
+    $rows = db_all($conn, "SELECT c.id, c.complaint_code, c.status, cat.category_name, d.student_name, i.findings, i.updated_at
+        FROM complaints c JOIN complaint_categories cat ON cat.id = c.category_id JOIN complaint_student_details d ON d.complaint_id = c.id LEFT JOIN investigations i ON i.complaint_id = c.id
         WHERE c.assigned_officer_id = ? ORDER BY c.id DESC LIMIT 300", 'i', [$me['id']]);
     $page_title = 'Investigation Management'; $active = 'investigation';
     include ROOT_PATH . '/includes/panel-header.php'; ?>

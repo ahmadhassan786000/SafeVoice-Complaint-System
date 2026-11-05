@@ -12,7 +12,7 @@ $s = db_one($conn, "SELECT COUNT(*) total,
     SUM(c.status = 'Under Investigation') inv, SUM(c.status = 'Resolved') resolved, SUM(c.status = 'Closed') closed
     FROM complaints c LEFT JOIN investigations i ON i.complaint_id = c.id WHERE c.assigned_officer_id = ?", 'i', [$oid]);
 $s['unread'] = (int)db_value($conn, "SELECT COUNT(*) FROM complaint_messages m JOIN complaints c ON c.id = m.complaint_id WHERE c.assigned_officer_id = ? AND m.sender_role = 'STUDENT' AND m.is_read = 0", 'i', [$oid]);
-$recent = db_all($conn, "SELECT c.id, c.complaint_code, c.status, c.created_at, cat.category_name, d.school_name, u.full_name AS student_name
+$recent = db_all($conn, "SELECT c.id, c.complaint_code, c.status, c.created_at, cat.category_name, d.school_name, d.student_name
     FROM complaints c JOIN complaint_categories cat ON cat.id = c.category_id JOIN complaint_student_details d ON d.complaint_id = c.id JOIN users u ON u.id = c.student_user_id
     WHERE c.assigned_officer_id = ? ORDER BY c.id DESC LIMIT 8", 'i', [$oid]);
 

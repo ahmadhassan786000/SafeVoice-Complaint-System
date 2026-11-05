@@ -372,7 +372,7 @@ function student_get_complaint($conn, $complaint_id, $student_id) {
         "SELECT c.id, c.complaint_code, c.reported_person_type, c.reported_person_name, c.incident_date, c.incident_location,
                 c.description, c.witness_information, c.status, c.created_at, c.updated_at,
                 cat.category_name, d.school_name, d.school_roll_number, d.class_name, d.gender,
-                u.full_name AS student_name, u.student_id AS student_code
+                d.student_name, u.student_id AS student_code
          FROM complaints c
          JOIN complaint_categories cat ON cat.id = c.category_id
          JOIN complaint_student_details d ON d.complaint_id = c.id
@@ -382,8 +382,8 @@ function student_get_complaint($conn, $complaint_id, $student_id) {
 
 /** Officer/Admin complaint query with full student identity. Officer is restricted to their own assignments. */
 function staff_get_complaint($conn, $complaint_id, $user) {
-    $sql = "SELECT c.*, cat.category_name, d.school_name, d.school_roll_number, d.class_name, d.gender,
-                   s.id AS student_uid, s.full_name AS student_name, s.student_id AS student_code, s.email AS student_email,
+    $sql = "SELECT c.*, cat.category_name, d.student_name, d.school_name, d.school_roll_number, d.class_name, d.gender,
+                   s.id AS student_uid, s.student_id AS student_code, s.email AS student_email,
                    s.phone AS student_phone, s.profile_image AS student_image,
                    o.full_name AS officer_name, o.email AS officer_email, o.profile_image AS officer_image
             FROM complaints c

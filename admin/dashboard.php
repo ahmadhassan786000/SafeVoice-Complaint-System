@@ -17,8 +17,8 @@ $cards = [
  ['bi-check2-circle', 'Resolved Complaints', $n("SELECT COUNT(*) FROM complaints WHERE status='Resolved'")],
  ['bi-question-circle', 'Unassigned Complaints', $n("SELECT COUNT(*) FROM complaints WHERE assigned_officer_id IS NULL")],
 ];
-$recent = db_all($conn, "SELECT c.id, c.complaint_code, c.status, c.created_at, c.description, cat.category_name, s.full_name AS student_name, o.full_name AS officer_name, c.assigned_officer_id
-    FROM complaints c JOIN complaint_categories cat ON cat.id=c.category_id JOIN users s ON s.id=c.student_user_id LEFT JOIN users o ON o.id=c.assigned_officer_id ORDER BY c.id DESC LIMIT 8");
+$recent = db_all($conn, "SELECT c.id, c.complaint_code, c.status, c.created_at, c.description, cat.category_name, d.student_name, o.full_name AS officer_name, c.assigned_officer_id
+    FROM complaints c JOIN complaint_categories cat ON cat.id=c.category_id JOIN complaint_student_details d ON d.complaint_id=c.id LEFT JOIN users o ON o.id=c.assigned_officer_id ORDER BY c.id DESC LIMIT 8");
 
 $page_title = 'Dashboard'; $active = 'dashboard';
 include ROOT_PATH . '/includes/panel-header.php';

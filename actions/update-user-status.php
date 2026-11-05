@@ -22,4 +22,4 @@ if ($t['role_code'] === ROLE_OFFICER && $status !== 'active') {
     $open = (int)db_value($conn, "SELECT COUNT(*) FROM complaints WHERE assigned_officer_id = ? AND status NOT IN ('Resolved','Closed')", 'i', [$id]);
     if ($open) flash_set('warning', "$open open complaint(s) are still assigned to this officer. Please reassign them. New complaints for their categories will stay Unassigned until reassigned.");
 }
-redirect($back);
+redirect($t['role_code'] === ROLE_OFFICER ? safe_return('admin/officers.php') : $back);

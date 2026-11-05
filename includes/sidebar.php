@@ -22,7 +22,7 @@ if ($role === ROLE_ADMIN) {
         'investigation' => ['officer/investigation.php', 'bi-search', 'Investigation Management', 0],
         'messages'      => ['officer/messages.php', 'bi-chat-dots', 'Messages', $unread],
     ];
-    $brand = 'SafeVoice'; $badge = 'Investigation Officer'; $brand_link = 'officer/dashboard.php';
+    $brand = $me['full_name']; $badge = 'Investigation Officer'; $brand_link = 'officer/dashboard.php';
 }
 ?>
 <a href="<?= url($brand_link) ?>" class="sv-side-brand text-decoration-none">

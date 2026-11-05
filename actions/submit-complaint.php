@@ -9,6 +9,7 @@ $me = require_role(ROLE_STUDENT);
 csrf_require();
 
 $school = trim($_POST['school_name'] ?? '');   $roll = trim($_POST['school_roll_number'] ?? '');
+$student_name = trim($_POST['student_name'] ?? '');
 $class  = trim($_POST['class_name'] ?? '');    $gender = $_POST['gender'] ?? '';
 $cat_id = (int)($_POST['category_id'] ?? 0);   $rtype = $_POST['reported_person_type'] ?? '';
 $rname  = trim($_POST['reported_person_name'] ?? '');
@@ -16,6 +17,7 @@ $date   = $_POST['incident_date'] ?? '';       $loc = trim($_POST['incident_loca
 $desc   = trim($_POST['description'] ?? '');   $wit = trim($_POST['witness_information'] ?? '');
 
 $err = [];
+if (mb_strlen($student_name) < 2 || mb_strlen($student_name) > 100 || !preg_match('/^[\p{L}\s.\'-]+$/u', $student_name)) $err[] = 'Please enter a valid student name.';
 if ($school === '' || mb_strlen($school) > 150) $err[] = 'School name is required (max 150 characters).';
 if ($roll === '' || mb_strlen($roll) > 50)      $err[] = 'School roll number is required.';
 if ($class === '' || mb_strlen($class) > 50)    $err[] = 'Class is required.';
@@ -43,7 +45,7 @@ $ok = (bool)$cid;
 if ($ok) {
     $code = make_complaint_code($cid);
     $ok = db_exec($conn, "UPDATE complaints SET complaint_code = ? WHERE id = ?", 'si', [$code, $cid]) !== false
-       && db_exec($conn, "INSERT INTO complaint_student_details (complaint_id, school_name, school_roll_number, class_name, gender) VALUES (?,?,?,?,?)", 'issss', [$cid, $school, $roll, $class, $gender]) !== false
+       && db_exec($conn, "INSERT INTO complaint_student_details (complaint_id, student_name, school_name, school_roll_number, class_name, gender) VALUES (?,?,?,?,?,?)", 'isssss', [$cid, $student_name, $school, $roll, $class, $gender]) !== false
        && db_exec($conn, "INSERT INTO complaint_status_history (complaint_id, old_status, new_status, changed_by_user_id, public_description) VALUES (?,?,?,?,?)", 'issis', [$cid, null, 'Pending', $me['id'], 'Complaint submitted']) !== false;
     if ($ok && $officer) {
         $ok = db_exec($conn, "INSERT INTO complaint_assignments (complaint_id, previous_officer_id, new_officer_id, assigned_by_admin_id, reassignment_reason) VALUES (?,?,?,?,?)",
